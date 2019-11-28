@@ -3,23 +3,26 @@ import BaseLayout from "../components/layouts/BaseLayout";
 import BasePage from "../components/layouts/BasePage";
 import { Button } from "reactstrap";
 
-const About = () => {
+const About = props => {
+  console.log("abour props", props.isAuth);
+
   return (
-    <BaseLayout>
+    <BaseLayout title="About as">
       <BasePage className="about-page">
         <div>
           <p>about page</p>
-          <Button color="danger">Danger!</Button>
+          <Button color="danger"></Button>
         </div>
       </BasePage>
     </BaseLayout>
   );
 };
 
-About.getInitialProps = async ({ query }) => {
-  const id = query.id;
+// About.getInitialProps = async ({ req, query }) => {
+//   const user = req && req.session ? req.session.decodedToken : null;
+//   console.log("about", req);
 
-  return {};
-};
+//   return {};
+// };
 
 export default About;

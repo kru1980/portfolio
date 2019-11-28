@@ -1,18 +1,18 @@
-// Render Prop
 import React from "react";
+import axios from "axios";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 // Сперва делаем структуру формы используя формик, для ее стилизации берем компоненты бутстрап
-import { Button, FormGroup, Label } from "reactstrap";
+import { Button, FormGroup, Label, Alert } from "reactstrap";
 
 import FormInput from "./FormInput";
 
 // -------------- initialisations start -----------
 
-const INITIAL_VALUES = { email: "", password: "" };
+const INITIAL_VALUES = { name: "", email: "", password: "", password2: "" };
 
 const validateInputs = values => {
-  //debugger;
   let errors = {};
+  // console.log(values);
 
   Object.keys(values).forEach(key => {
     if (!values[key]) {
@@ -20,32 +20,42 @@ const validateInputs = values => {
     }
   });
 
+  // if (password != password2) {
+  //   errors.text = "Пароли не совпадают";
+  // }
+
   return errors;
 };
 
-const saveCredentialData = credentialsValues => {
-  setTimeout(() => {
-    alert(JSON.stringify(credentialsValues, null, 2));
-  }, 400);
-};
+// const saveCredentialData = credentialsValues => {
+//   setTimeout(() => {
+//     alert(JSON.stringify(credentialsValues, null, 2));
+//   }, 400);
+// };
 
 // -------------- initialisations end -----------
-const LoginCreateForm = ({ handleLoginCredentials }) => (
+const RegistrationForm = props => (
   <div>
-    <h1>Форма входа</h1>
+    <h1>Форма регистарции</h1>
+
     <Formik
       initialValues={INITIAL_VALUES}
       validate={validateInputs}
-      onSubmit={(values, { setSubmitting }) => {
-        handleLoginCredentials(values);
-        console.log("оправлены логин данные");
-
-        setSubmitting(false);
+      onSubmit={(values, actions) => {
+        props.handleSubmit(values);
+        actions.setSubmitting(false);
+        actions.resetForm();
       }}
     >
       {/* оборачиваем специальным компонентом  FormGroup, доьавляем компоненту Field (формика) класс бутстрапа form-control. Создаем кастомный компонент FormInput и добавляем его атрибутом в компонент Field*/}
       {({ isSubmitting }) => (
         <Form>
+          <Field
+            className="form-control"
+            type="name"
+            name="name"
+            component={FormInput}
+          />
           <Field
             className="form-control"
             type="email"
@@ -60,8 +70,15 @@ const LoginCreateForm = ({ handleLoginCredentials }) => (
             component={FormInput}
           />
 
+          <Field
+            className="form-control"
+            type="password"
+            name="password2"
+            component={FormInput}
+          />
+          {/* {errors.name && <div id="feedback">{errors.name}</div>} */}
           <Button block type="submit" disabled={isSubmitting}>
-            Войти
+            Зарегистрироваться
           </Button>
         </Form>
       )}
@@ -69,4 +86,4 @@ const LoginCreateForm = ({ handleLoginCredentials }) => (
   </div>
 );
 
-export default LoginCreateForm;
+export default RegistrationForm;
