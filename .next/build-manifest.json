@@ -18,11 +18,11 @@
       "static/runtime/webpack.js",
       "static/runtime/main.js"
     ],
-    "/index": [
+    "/callback": [
       "static/runtime/webpack.js",
       "static/runtime/main.js"
     ],
-    "/login": [
+    "/index": [
       "static/runtime/webpack.js",
       "static/runtime/main.js"
     ]

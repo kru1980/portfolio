@@ -1,5 +1,7 @@
 import React from "react";
 import Link from "next/link";
+// импортим экземпляр нашего auth0
+import auth0 from "../../services/auth0";
 
 import {
   Collapse,
@@ -22,13 +24,14 @@ const BsNavLink = ({ title, route }) => {
     </Link>
   );
 };
-
-// Login в моей идеи это ссылка на страницу, на которой расположена форма регистрации
-// const Login = () => {
-//   return <span className="nav-link port-navbar-link clickable">Login</span>;
-// };
-
-// Logout спан элемент при клике на который идет событие онклик, метод приходит через контекст или через пропсы из _app компонента
+// Нажимая на ссылку вызываем форму входа auth0
+const Login = () => {
+  return (
+    <span onClick={auth0.login} className="nav-link port-navbar-link clickable">
+      Login
+    </span>
+  );
+};
 const Logout = () => {
   return <span className="nav-link port-navbar-link clickable">Logout</span>;
 };
@@ -79,14 +82,14 @@ export default class Header extends React.Component {
               <NavItem className="port-navbar-item">
                 <BsNavLink title="Cv" route="/cv" />
               </NavItem> */}
-              {!isAuthenticated && (
+              {/* {!isAuthenticated && (
                 <NavItem className="port-navbar-item">
                   <BsNavLink title="Registration" route="/registration" />
                 </NavItem>
-              )}
+              )} */}
               {!isAuthenticated && (
                 <NavItem className="port-navbar-item">
-                  <BsNavLink title="Login" route="/login" />
+                  <Login />
                 </NavItem>
               )}
 
