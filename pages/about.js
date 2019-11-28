@@ -4,8 +4,6 @@ import BasePage from "../components/layouts/BasePage";
 import { Button } from "reactstrap";
 
 const About = props => {
-  console.log("abour props", props.isAuth);
-
   return (
     <BaseLayout title="About as">
       <BasePage className="about-page">
@@ -17,12 +15,5 @@ const About = props => {
     </BaseLayout>
   );
 };
-
-// About.getInitialProps = async ({ req, query }) => {
-//   const user = req && req.session ? req.session.decodedToken : null;
-//   console.log("about", req);
-
-//   return {};
-// };
 
 export default About;

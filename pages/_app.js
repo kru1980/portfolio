@@ -19,10 +19,8 @@ class MyApp extends App {
   static async getInitialProps(appContext) {
     const appProps = await App.getInitialProps(appContext);
 
-    console.log("=========Супер важно!! _App ===============");
-    // console.log("appContext.ctx.user _app ", appContext.ctx.req);
-    // const user = process.browser ? await auth0.clientAuth() : await auth0.serverAuth(ctx.req);
-    // Важно!! в любом случае чтобы  юзер появился в _арр на стороне клиента, юзера сохраняем в куках. Использовать куки и сессии неправильно?
+    // console.log("=========Супер важно!! _App ===============");
+
     const user = appContext.ctx.req ? appContext.ctx.req.user : undefined;
     const auth = { user, isAuthenticated: !!user };
     return { ...appProps, auth };

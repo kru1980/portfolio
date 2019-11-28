@@ -4,7 +4,7 @@ import BaseLayout from "../components/layouts/BaseLayout";
 import { Container, Row, Col } from "reactstrap";
 
 const Index = props => {
-  console.log("props render index page", props);
+  // console.log("props render index page", props);
 
   return (
     <BaseLayout className="cover">

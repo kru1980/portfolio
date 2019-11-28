@@ -59,7 +59,7 @@ export default class Header extends React.Component {
           expand="md"
         >
           <NavbarBrand className="port-navbar-brand" href="/">
-            Rail 2
+            Portfolio
           </NavbarBrand>
           <NavbarToggler onClick={this.toggle} />
           <Collapse isOpen={this.state.isOpen} navbar>

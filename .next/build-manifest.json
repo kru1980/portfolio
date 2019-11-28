@@ -22,7 +22,7 @@
       "static/runtime/webpack.js",
       "static/runtime/main.js"
     ],
-    "/portfolios": [
+    "/login": [
       "static/runtime/webpack.js",
       "static/runtime/main.js"
     ]
