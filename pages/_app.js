@@ -1,5 +1,6 @@
 import React from "react";
 import App, { Container } from "next/app";
+import auth0 from "../services/auth0";
 
 import "bootstrap/dist/css/bootstrap.min.css";
 import "../style/main.scss";
@@ -21,15 +22,23 @@ class MyApp extends App {
 
     // console.log("=========Супер важно!! _App ===============");
 
-    const user = appContext.ctx.req ? appContext.ctx.req.user : undefined;
-    const auth = { user, isAuthenticated: !!user };
+    // isAuthenticated проверяет времы выдачи токена, вычитает из текущего времени, и если он не протух, разрешает доступ.
+    const isAuthenticated = process.browser
+      ? auth0.clientAuth()
+      : auth0.serverAuth(appContext.ctx.req);
+
+    // const user = appContext.ctx.req ? appContext.ctx.req.user : undefined;
+
+    const auth = { isAuthenticated };
+    console.log("_app auth", auth);
+
     return { ...appProps, auth };
   }
 
   render() {
     const { Component, pageProps, auth } = this.props;
 
-    return <Component {...pageProps} {...auth} />;
+    return <Component {...pageProps} auth={auth} />;
   }
 }
 

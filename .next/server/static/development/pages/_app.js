@@ -93,6 +93,17 @@ module.exports =
 /************************************************************************/
 /******/ ({
 
+/***/ "./node_modules/@babel/runtime-corejs2/core-js/json/stringify.js":
+/*!***********************************************************************!*\
+  !*** ./node_modules/@babel/runtime-corejs2/core-js/json/stringify.js ***!
+  \***********************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+module.exports = __webpack_require__(/*! core-js/library/fn/json/stringify */ "core-js/library/fn/json/stringify");
+
+/***/ }),
+
 /***/ "./node_modules/@babel/runtime-corejs2/core-js/object/assign.js":
 /*!**********************************************************************!*\
   !*** ./node_modules/@babel/runtime-corejs2/core-js/object/assign.js ***!
@@ -824,10 +835,12 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_2__);
 /* harmony import */ var next_app__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! next/app */ "./node_modules/next/app.js");
 /* harmony import */ var next_app__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(next_app__WEBPACK_IMPORTED_MODULE_3__);
-/* harmony import */ var bootstrap_dist_css_bootstrap_min_css__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! bootstrap/dist/css/bootstrap.min.css */ "./node_modules/bootstrap/dist/css/bootstrap.min.css");
-/* harmony import */ var bootstrap_dist_css_bootstrap_min_css__WEBPACK_IMPORTED_MODULE_4___default = /*#__PURE__*/__webpack_require__.n(bootstrap_dist_css_bootstrap_min_css__WEBPACK_IMPORTED_MODULE_4__);
-/* harmony import */ var _style_main_scss__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../style/main.scss */ "./style/main.scss");
-/* harmony import */ var _style_main_scss__WEBPACK_IMPORTED_MODULE_5___default = /*#__PURE__*/__webpack_require__.n(_style_main_scss__WEBPACK_IMPORTED_MODULE_5__);
+/* harmony import */ var _services_auth0__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../services/auth0 */ "./services/auth0.js");
+/* harmony import */ var bootstrap_dist_css_bootstrap_min_css__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! bootstrap/dist/css/bootstrap.min.css */ "./node_modules/bootstrap/dist/css/bootstrap.min.css");
+/* harmony import */ var bootstrap_dist_css_bootstrap_min_css__WEBPACK_IMPORTED_MODULE_5___default = /*#__PURE__*/__webpack_require__.n(bootstrap_dist_css_bootstrap_min_css__WEBPACK_IMPORTED_MODULE_5__);
+/* harmony import */ var _style_main_scss__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../style/main.scss */ "./style/main.scss");
+/* harmony import */ var _style_main_scss__WEBPACK_IMPORTED_MODULE_6___default = /*#__PURE__*/__webpack_require__.n(_style_main_scss__WEBPACK_IMPORTED_MODULE_6__);
+
 
 
 
@@ -848,12 +861,14 @@ class MyApp extends next_app__WEBPACK_IMPORTED_MODULE_3___default.a {
   //   }
   static async getInitialProps(appContext) {
     const appProps = await next_app__WEBPACK_IMPORTED_MODULE_3___default.a.getInitialProps(appContext); // console.log("=========Супер важно!! _App ===============");
+    // isAuthenticated проверяет времы выдачи токена, вычитает из текущего времени, и если он не протух, разрешает доступ.
 
-    const user = appContext.ctx.req ? appContext.ctx.req.user : undefined;
+    const isAuthenticated =  false ? undefined : _services_auth0__WEBPACK_IMPORTED_MODULE_4__["default"].serverAuth(appContext.ctx.req); // const user = appContext.ctx.req ? appContext.ctx.req.user : undefined;
+
     const auth = {
-      user,
-      isAuthenticated: !!user
+      isAuthenticated
     };
+    console.log("_app auth", auth);
     return Object(_babel_runtime_corejs2_helpers_esm_objectSpread__WEBPACK_IMPORTED_MODULE_1__["default"])({}, appProps, {
       auth
     });
@@ -865,12 +880,137 @@ class MyApp extends next_app__WEBPACK_IMPORTED_MODULE_3___default.a {
       pageProps,
       auth
     } = this.props;
-    return react__WEBPACK_IMPORTED_MODULE_2___default.a.createElement(Component, Object(_babel_runtime_corejs2_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__["default"])({}, pageProps, auth));
+    return react__WEBPACK_IMPORTED_MODULE_2___default.a.createElement(Component, Object(_babel_runtime_corejs2_helpers_esm_extends__WEBPACK_IMPORTED_MODULE_0__["default"])({}, pageProps, {
+      auth: auth
+    }));
   }
 
 }
 
 /* harmony default export */ __webpack_exports__["default"] = (MyApp);
+
+/***/ }),
+
+/***/ "./services/auth0.js":
+/*!***************************!*\
+  !*** ./services/auth0.js ***!
+  \***************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _babel_runtime_corejs2_core_js_json_stringify__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @babel/runtime-corejs2/core-js/json/stringify */ "./node_modules/@babel/runtime-corejs2/core-js/json/stringify.js");
+/* harmony import */ var _babel_runtime_corejs2_core_js_json_stringify__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_babel_runtime_corejs2_core_js_json_stringify__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _babel_runtime_corejs2_core_js_promise__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @babel/runtime-corejs2/core-js/promise */ "./node_modules/@babel/runtime-corejs2/core-js/promise.js");
+/* harmony import */ var _babel_runtime_corejs2_core_js_promise__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_babel_runtime_corejs2_core_js_promise__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var _babel_runtime_corejs2_helpers_esm_defineProperty__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @babel/runtime-corejs2/helpers/esm/defineProperty */ "./node_modules/@babel/runtime-corejs2/helpers/esm/defineProperty.js");
+/* harmony import */ var auth0_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! auth0-js */ "auth0-js");
+/* harmony import */ var auth0_js__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(auth0_js__WEBPACK_IMPORTED_MODULE_3__);
+/* harmony import */ var js_cookie__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! js-cookie */ "js-cookie");
+/* harmony import */ var js_cookie__WEBPACK_IMPORTED_MODULE_4___default = /*#__PURE__*/__webpack_require__.n(js_cookie__WEBPACK_IMPORTED_MODULE_4__);
+/* harmony import */ var jsonwebtoken__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! jsonwebtoken */ "jsonwebtoken");
+/* harmony import */ var jsonwebtoken__WEBPACK_IMPORTED_MODULE_5___default = /*#__PURE__*/__webpack_require__.n(jsonwebtoken__WEBPACK_IMPORTED_MODULE_5__);
+
+
+
+
+
+
+
+class Auth0 {
+  constructor() {
+    Object(_babel_runtime_corejs2_helpers_esm_defineProperty__WEBPACK_IMPORTED_MODULE_2__["default"])(this, "isAuthenticated", () => {
+      // Временное решение
+      // данная ф-ция извлечет из куков время жизни токена, сравнит его с текущим времененем, если оно больше, значит токен еще не протух
+      // Проблема в том, что куки есть только в браузере и при перезагрузке странице, сервер не видит кук и на долю момента в хедере мы видим сообщение ссылки логин, потом данные обновляются из куков браузера и юзер вновь зареган
+      const expiresAt = js_cookie__WEBPACK_IMPORTED_MODULE_4___default.a.getJSON("expiresAt"); // console.log("isAuthenticated = ()", new Date().getTime() < expiresAt);
+
+      return new Date().getTime() < expiresAt;
+    });
+
+    Object(_babel_runtime_corejs2_helpers_esm_defineProperty__WEBPACK_IMPORTED_MODULE_2__["default"])(this, "verifyToken", token => {
+      if (token) {
+        const decodedToken = jsonwebtoken__WEBPACK_IMPORTED_MODULE_5___default.a.decode(token);
+        const expiresAt = decodedToken.exp * 1000; // new Date().getTime() - текущее время
+
+        return decodedToken && new Date().getTime() < expiresAt ? decodedToken : undefined;
+      }
+
+      return undefined;
+    });
+
+    Object(_babel_runtime_corejs2_helpers_esm_defineProperty__WEBPACK_IMPORTED_MODULE_2__["default"])(this, "clientAuth", () => {
+      // собсвенно возвращаем вызов isAuthenticated функции которая извлекает из куков время жизни токена
+      return this.isAuthenticated();
+    });
+
+    Object(_babel_runtime_corejs2_helpers_esm_defineProperty__WEBPACK_IMPORTED_MODULE_2__["default"])(this, "serverAuth", req => {
+      // При перерендере стр, стр формируется на сервере,читать куки клиента не может, однако, если в заголовках объекта req, присутствуют куки, их надо проанализировать на содержание expiresAt - времени жизни токена
+      if (req.header.cookie) {
+        // извлекаем из заголовка куки, ищем в них expiresAt=
+        const expiresAtCookie = req.header.cookie.split(";").find(c => c.trim().startsWith("expiresAt="));
+        if (!expiresAtCookie) return undefined;
+        debugger;
+        const expiresAt = expiresAtCookie.split("=")[1]; //new Date().getTime() < expiresAt; -плохое решение по безопасности тк jwt и информация о юзере в открытом доступе. Будем шифровать токен
+
+        return new Date().getTime() < expiresAt;
+      }
+    });
+
+    this.auth0 = new auth0_js__WEBPACK_IMPORTED_MODULE_3___default.a.WebAuth({
+      domain: "dev-uejn1xhv.auth0.com",
+      clientID: "VH8prSsA7MmPx3AxbLGgoHgIbyHyQmU1",
+      redirectUri: `http://localhost:3000/callback`,
+      responseType: "token id_token",
+      scope: "openid profile"
+    });
+    this.login = this.login.bind(this);
+    this.logout = this.logout.bind(this);
+    this.handleAuthentication = this.handleAuthentication.bind(this);
+  }
+
+  handleAuthentication() {
+    return new _babel_runtime_corejs2_core_js_promise__WEBPACK_IMPORTED_MODULE_1___default.a((resolve, reject) => {
+      this.auth0.parseHash((err, authResult) => {
+        if (authResult && authResult.accessToken && authResult.idToken) {
+          this.setSession(authResult);
+          resolve();
+        } else if (err) {
+          reject(err);
+          console.log(err);
+        }
+      });
+    });
+  }
+
+  setSession(authResult) {
+    //expiresAt из ответа auth0 сервера берется время создания токена, приводится к секундам, прибавляется текущее время в секундах = время жизни токена, которое сохраняется в куках
+    const expiresAt = _babel_runtime_corejs2_core_js_json_stringify__WEBPACK_IMPORTED_MODULE_0___default()(authResult.expiresIn * 1000 + new Date().getTime());
+
+    js_cookie__WEBPACK_IMPORTED_MODULE_4___default.a.set("user", authResult.idTokenPayload);
+    js_cookie__WEBPACK_IMPORTED_MODULE_4___default.a.set("jwt", authResult.idToken);
+    js_cookie__WEBPACK_IMPORTED_MODULE_4___default.a.set("expiresAt", expiresAt);
+  }
+
+  login() {
+    this.auth0.authorize();
+  }
+
+  logout() {
+    js_cookie__WEBPACK_IMPORTED_MODULE_4___default.a.remove("jwt");
+    js_cookie__WEBPACK_IMPORTED_MODULE_4___default.a.remove("user");
+    js_cookie__WEBPACK_IMPORTED_MODULE_4___default.a.remove("expiresAt");
+    this.auth0.logout({
+      returnTo: "http://localhost:3000",
+      clientID: "VH8prSsA7MmPx3AxbLGgoHgIbyHyQmU1"
+    });
+  }
+
+}
+
+const auth0Client = new Auth0();
+/* harmony default export */ __webpack_exports__["default"] = (auth0Client);
 
 /***/ }),
 
@@ -894,6 +1034,28 @@ class MyApp extends next_app__WEBPACK_IMPORTED_MODULE_3___default.a {
 
 module.exports = __webpack_require__(/*! private-next-pages/_app.js */"./pages/_app.js");
 
+
+/***/ }),
+
+/***/ "auth0-js":
+/*!***************************!*\
+  !*** external "auth0-js" ***!
+  \***************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+module.exports = require("auth0-js");
+
+/***/ }),
+
+/***/ "core-js/library/fn/json/stringify":
+/*!****************************************************!*\
+  !*** external "core-js/library/fn/json/stringify" ***!
+  \****************************************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+module.exports = require("core-js/library/fn/json/stringify");
 
 /***/ }),
 
@@ -960,6 +1122,28 @@ module.exports = require("core-js/library/fn/object/keys");
 /***/ (function(module, exports) {
 
 module.exports = require("core-js/library/fn/promise");
+
+/***/ }),
+
+/***/ "js-cookie":
+/*!****************************!*\
+  !*** external "js-cookie" ***!
+  \****************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+module.exports = require("js-cookie");
+
+/***/ }),
+
+/***/ "jsonwebtoken":
+/*!*******************************!*\
+  !*** external "jsonwebtoken" ***!
+  \*******************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+module.exports = require("jsonwebtoken");
 
 /***/ }),
 

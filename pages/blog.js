@@ -2,9 +2,9 @@ import React from "react";
 import BaseLayout from "../components/layouts/BaseLayout";
 import BasePage from "../components/layouts/BasePage";
 
-const Blog = () => {
+const Blog = props => {
   return (
-    <BaseLayout>
+    <BaseLayout {...props.auth}>
       <BasePage>Blog page</BasePage>
     </BaseLayout>
   );
