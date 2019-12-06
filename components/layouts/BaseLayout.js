@@ -7,6 +7,7 @@ const BaseLayout = props => {
     children,
     className,
     isAuthenticated,
+    user,
     title = "This is the default title"
   } = props;
   return (
@@ -18,7 +19,7 @@ const BaseLayout = props => {
       </Head>
 
       <div className="layout-container">
-        <Header isAuthenticated={isAuthenticated} />
+        <Header isAuthenticated={isAuthenticated} user={user} />
         <main className={`cover ${className}`}>
           <div className="wrapper">{children}</div>
         </main>

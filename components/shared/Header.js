@@ -59,8 +59,8 @@ export default class Header extends React.Component {
     });
   }
   render() {
-    const { isAuthenticated } = this.state;
-    console.log("header", this.props);
+    // const { isAuthenticated, user } = this.state;
+    const { isAuthenticated, user } = this.props;
 
     return (
       <div>
@@ -105,6 +105,14 @@ export default class Header extends React.Component {
               {isAuthenticated && (
                 <NavItem className="port-navbar-item">
                   <Logout />
+                  {/* logout это ссылка, а не компанент */}
+                </NavItem>
+              )}
+              {isAuthenticated && (
+                <NavItem className="port-navbar-item">
+                  <span className="nav-link port-navbar-link clickable">
+                    {user.nickname}
+                  </span>
                   {/* logout это ссылка, а не компанент */}
                 </NavItem>
               )}

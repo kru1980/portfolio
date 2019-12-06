@@ -18,7 +18,7 @@
       "static/runtime/webpack.js",
       "static/runtime/main.js"
     ],
-    "/about": [
+    "/callback": [
       "static/runtime/webpack.js",
       "static/runtime/main.js"
     ],

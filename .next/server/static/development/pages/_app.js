@@ -863,12 +863,13 @@ class MyApp extends next_app__WEBPACK_IMPORTED_MODULE_3___default.a {
     const appProps = await next_app__WEBPACK_IMPORTED_MODULE_3___default.a.getInitialProps(appContext); // console.log("=========Супер важно!! _App ===============");
     // isAuthenticated проверяет времы выдачи токена, вычитает из текущего времени, и если он не протух, разрешает доступ.
 
-    const isAuthenticated =  false ? undefined : _services_auth0__WEBPACK_IMPORTED_MODULE_4__["default"].serverAuth(appContext.ctx.req); // const user = appContext.ctx.req ? appContext.ctx.req.user : undefined;
+    const user =  false ? undefined : _services_auth0__WEBPACK_IMPORTED_MODULE_4__["default"].serverAuth(appContext.ctx.req); // const user = appContext.ctx.req ? appContext.ctx.req.user : undefined;
 
     const auth = {
-      isAuthenticated
-    };
-    console.log("_app auth", auth);
+      user,
+      isAuthenticated: !!user
+    }; // console.log("_app auth", auth);
+
     return Object(_babel_runtime_corejs2_helpers_esm_objectSpread__WEBPACK_IMPORTED_MODULE_1__["default"])({}, appProps, {
       auth
     });
@@ -920,19 +921,11 @@ __webpack_require__.r(__webpack_exports__);
 
 class Auth0 {
   constructor() {
-    Object(_babel_runtime_corejs2_helpers_esm_defineProperty__WEBPACK_IMPORTED_MODULE_2__["default"])(this, "isAuthenticated", () => {
-      // Временное решение
-      // данная ф-ция извлечет из куков время жизни токена, сравнит его с текущим времененем, если оно больше, значит токен еще не протух
-      // Проблема в том, что куки есть только в браузере и при перезагрузке странице, сервер не видит кук и на долю момента в хедере мы видим сообщение ссылки логин, потом данные обновляются из куков браузера и юзер вновь зареган
-      const expiresAt = js_cookie__WEBPACK_IMPORTED_MODULE_4___default.a.getJSON("expiresAt"); // console.log("isAuthenticated = ()", new Date().getTime() < expiresAt);
-
-      return new Date().getTime() < expiresAt;
-    });
-
     Object(_babel_runtime_corejs2_helpers_esm_defineProperty__WEBPACK_IMPORTED_MODULE_2__["default"])(this, "verifyToken", token => {
       if (token) {
         const decodedToken = jsonwebtoken__WEBPACK_IMPORTED_MODULE_5___default.a.decode(token);
         const expiresAt = decodedToken.exp * 1000; // new Date().getTime() - текущее время
+        // если есть сам decodedToken, проверяем условие и если токен еще не протух высылаем его на сервер некст
 
         return decodedToken && new Date().getTime() < expiresAt ? decodedToken : undefined;
       }
@@ -941,21 +934,29 @@ class Auth0 {
     });
 
     Object(_babel_runtime_corejs2_helpers_esm_defineProperty__WEBPACK_IMPORTED_MODULE_2__["default"])(this, "clientAuth", () => {
+      //Вариант 1 не безопастный тк данный из токена открыты на стороне клиента
       // собсвенно возвращаем вызов isAuthenticated функции которая извлекает из куков время жизни токена
-      return this.isAuthenticated();
+      // return this.isAuthenticated();
+      // Вариант 2
+      // Верифицируем и декодируем токен на стороне сервера next
+      const token = js_cookie__WEBPACK_IMPORTED_MODULE_4___default.a.getJSON("jwt");
+      const verifyToken = this.verifyToken(token);
+      return verifyToken;
     });
 
     Object(_babel_runtime_corejs2_helpers_esm_defineProperty__WEBPACK_IMPORTED_MODULE_2__["default"])(this, "serverAuth", req => {
       // При перерендере стр, стр формируется на сервере,читать куки клиента не может, однако, если в заголовках объекта req, присутствуют куки, их надо проанализировать на содержание expiresAt - времени жизни токена
-      if (req.header.cookie) {
-        // извлекаем из заголовка куки, ищем в них expiresAt=
-        const expiresAtCookie = req.header.cookie.split(";").find(c => c.trim().startsWith("expiresAt="));
-        if (!expiresAtCookie) return undefined;
-        debugger;
-        const expiresAt = expiresAtCookie.split("=")[1]; //new Date().getTime() < expiresAt; -плохое решение по безопасности тк jwt и информация о юзере в открытом доступе. Будем шифровать токен
+      if (req.headers.cookie) {
+        // извлекаем из заголовка куки, ищем в них token=
+        const tokenCookie = req.headers.cookie.split(";").find(c => c.trim().startsWith("jwt="));
+        if (!tokenCookie) return undefined;
+        const token = tokenCookie.split("=")[1]; //new Date().getTime() < expiresAt; -плохое решение по безопасности тк jwt и информация о юзере в открытом доступе. Будем шифровать токен
 
-        return new Date().getTime() < expiresAt;
+        const verifyToken = this.verifyToken(token);
+        return verifyToken; // return new Date().getTime() < expiresAt;
       }
+
+      return undefined;
     });
 
     this.auth0 = new auth0_js__WEBPACK_IMPORTED_MODULE_3___default.a.WebAuth({
@@ -1005,7 +1006,16 @@ class Auth0 {
       returnTo: "http://localhost:3000",
       clientID: "VH8prSsA7MmPx3AxbLGgoHgIbyHyQmU1"
     });
-  }
+  } // isAuthenticated = () => {
+  //   // Временное решение
+  //   // данная ф-ция извлечет из куков время жизни токена, сравнит его с текущим времененем, если оно больше, значит токен еще не протух
+  //   // Проблема в том, что куки есть только в браузере и при перезагрузке странице, сервер не видит кук и на долю момента в хедере мы видим сообщение ссылки логин, потом данные обновляются из куков браузера и юзер вновь зареган
+  //   const expiresAt = Cookies.getJSON("expiresAt");
+  //   // console.log("isAuthenticated = ()", new Date().getTime() < expiresAt);
+  //   return new Date().getTime() < expiresAt;
+  // };
+  // c помощью библиотеки jsonwebtoken декодируем токен
+
 
 }
 

@@ -23,14 +23,14 @@ class MyApp extends App {
     // console.log("=========Супер важно!! _App ===============");
 
     // isAuthenticated проверяет времы выдачи токена, вычитает из текущего времени, и если он не протух, разрешает доступ.
-    const isAuthenticated = process.browser
+    const user = process.browser
       ? auth0.clientAuth()
       : auth0.serverAuth(appContext.ctx.req);
 
     // const user = appContext.ctx.req ? appContext.ctx.req.user : undefined;
 
-    const auth = { isAuthenticated };
-    console.log("_app auth", auth);
+    const auth = { user, isAuthenticated: !!user };
+    // console.log("_app auth", auth);
 
     return { ...appProps, auth };
   }

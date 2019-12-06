@@ -4,7 +4,9 @@ import BaseLayout from "../components/layouts/BaseLayout";
 import { Container, Row, Col } from "reactstrap";
 
 const Index = props => {
-  console.log("props render index page", props);
+  // console.log("props render index page", props);
+
+  const { isAuthenticated, user } = props.auth;
 
   return (
     <BaseLayout className="cover" {...props.auth}>
@@ -36,9 +38,9 @@ const Index = props => {
             <Col md="6" className="hero-welcome-wrapper">
               <div className="hero-welcome-text">
                 <h1>
-                  Welcome to the portfolio website of Filip Jerga. Get informed,
-                  collaborate and discover projects I was working on through the
-                  years!
+                  {user ? <b>Привет {user.nickname}</b> : ""} Welcome to the
+                  portfolio website of Filip Jerga. Get informed, collaborate
+                  and discover projects I was working on through the years!
                 </h1>
               </div>
               <div className="hero-welcome-bio">
