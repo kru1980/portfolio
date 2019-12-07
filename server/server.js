@@ -1,21 +1,11 @@
 const express = require("express");
 const next = require("next");
-
 const routes = require("../routes"); // next routes
-
 const bodyParser = require("body-parser");
 
-const passport = require("passport");
-
-const session = require("express-session");
 const mongoose = require("mongoose");
-const MongoStore = require("connect-mongo")(session);
-
 const db = require("./config/db");
 const config = require("./config/config");
-
-// passport config подключение стратегии
-require("./services/passport")(passport);
 
 const port = parseInt(process.env.PORT, 10) || 3000;
 
@@ -36,34 +26,23 @@ mongoose
 
 mongoose.Promise = global.Promise;
 
+// secret data
+const secretData = [
+  { title: "secret1", descriptions: "секретный данные 1" },
+  { title: "secret2", descriptions: "секретный данные 2" }
+];
+// service
+const authService = require("./services/auth");
+
 // server next
 app.prepare().then(() => {
   const server = express();
   server.use(bodyParser.urlencoded({ extended: false })); // тк через  axios то false
   server.use(bodyParser.json());
 
-  // session
-  server.use(
-    session({
-      secret: config.SESSION_SECRET,
-      resave: true,
-      saveUninitialized: true,
-      store: new MongoStore({
-        mongooseConnection: mongoose.connection
-      }),
-      expires: 180000000000000000
-      // expires: new Date(Date.now() + 60 * 60 * 24 * 30)
-    })
-  );
-  // подкл паспорта
-  server.use(passport.initialize());
-  server.use(passport.session());
-
-  server.use("/users", require("./routes").auth); // подкл роут юзера
-
   // хранилище секретных данных
-  server.get("/v1/secret", (req, res) => {
-    return res.send("ok secret rout");
+  server.get("/api/v1/secret", authService.checkJWT, (req, res) => {
+    return res.json(secretData);
   });
 
   server.get("*", (req, res) => {

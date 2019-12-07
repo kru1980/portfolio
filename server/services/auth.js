@@ -1,14 +1,11 @@
-module.exports = {
-  ensureAuthenticated: function(req, res, next) {
-    if (req.isAuthenticated()) {
-      return next();
-    }
-
-    //   req.flash("error_msg", "У вас нет прав доступа");
-    res.redirect("/login");
-  },
-
-  helloRodik: (req, res) => {
-    console.log("hello from helpers");
+exports.checkJWT = function(req, res, next) {
+  const isValid = false;
+  if (isValid) {
+    return next();
+  } else {
+    return res.status(401).send({
+      title: "Вы не вошли на сайт",
+      detail: "Для получения данных войдите на сайт"
+    });
   }
 };
