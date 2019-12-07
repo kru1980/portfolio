@@ -863,7 +863,7 @@ class MyApp extends next_app__WEBPACK_IMPORTED_MODULE_3___default.a {
     const appProps = await next_app__WEBPACK_IMPORTED_MODULE_3___default.a.getInitialProps(appContext); // console.log("=========Супер важно!! _App ===============");
     // isAuthenticated проверяет времы выдачи токена, вычитает из текущего времени, и если он не протух, разрешает доступ.
 
-    const user =  false ? undefined : _services_auth0__WEBPACK_IMPORTED_MODULE_4__["default"].serverAuth(appContext.ctx.req); // const user = appContext.ctx.req ? appContext.ctx.req.user : undefined;
+    const user =  false ? undefined : await _services_auth0__WEBPACK_IMPORTED_MODULE_4__["default"].serverAuth(appContext.ctx.req); // const user = appContext.ctx.req ? appContext.ctx.req.user : undefined;
 
     const auth = {
       user,
@@ -912,6 +912,9 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var js_cookie__WEBPACK_IMPORTED_MODULE_4___default = /*#__PURE__*/__webpack_require__.n(js_cookie__WEBPACK_IMPORTED_MODULE_4__);
 /* harmony import */ var jsonwebtoken__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! jsonwebtoken */ "jsonwebtoken");
 /* harmony import */ var jsonwebtoken__WEBPACK_IMPORTED_MODULE_5___default = /*#__PURE__*/__webpack_require__.n(jsonwebtoken__WEBPACK_IMPORTED_MODULE_5__);
+/* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! axios */ "axios");
+/* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_6___default = /*#__PURE__*/__webpack_require__.n(axios__WEBPACK_IMPORTED_MODULE_6__);
+
 
 
 
@@ -921,30 +924,18 @@ __webpack_require__.r(__webpack_exports__);
 
 class Auth0 {
   constructor() {
-    Object(_babel_runtime_corejs2_helpers_esm_defineProperty__WEBPACK_IMPORTED_MODULE_2__["default"])(this, "verifyToken", token => {
-      if (token) {
-        const decodedToken = jsonwebtoken__WEBPACK_IMPORTED_MODULE_5___default.a.decode(token);
-        const expiresAt = decodedToken.exp * 1000; // new Date().getTime() - текущее время
-        // если есть сам decodedToken, проверяем условие и если токен еще не протух высылаем его на сервер некст
-
-        return decodedToken && new Date().getTime() < expiresAt ? decodedToken : undefined;
-      }
-
-      return undefined;
-    });
-
-    Object(_babel_runtime_corejs2_helpers_esm_defineProperty__WEBPACK_IMPORTED_MODULE_2__["default"])(this, "clientAuth", () => {
+    Object(_babel_runtime_corejs2_helpers_esm_defineProperty__WEBPACK_IMPORTED_MODULE_2__["default"])(this, "clientAuth", async () => {
       //Вариант 1 не безопастный тк данный из токена открыты на стороне клиента
       // собсвенно возвращаем вызов isAuthenticated функции которая извлекает из куков время жизни токена
       // return this.isAuthenticated();
       // Вариант 2
       // Верифицируем и декодируем токен на стороне сервера next
       const token = js_cookie__WEBPACK_IMPORTED_MODULE_4___default.a.getJSON("jwt");
-      const verifyToken = this.verifyToken(token);
-      return verifyToken;
+      const verifiedToken = await this.verifyToken(token);
+      return verifiedToken;
     });
 
-    Object(_babel_runtime_corejs2_helpers_esm_defineProperty__WEBPACK_IMPORTED_MODULE_2__["default"])(this, "serverAuth", req => {
+    Object(_babel_runtime_corejs2_helpers_esm_defineProperty__WEBPACK_IMPORTED_MODULE_2__["default"])(this, "serverAuth", async req => {
       // При перерендере стр, стр формируется на сервере,читать куки клиента не может, однако, если в заголовках объекта req, присутствуют куки, их надо проанализировать на содержание expiresAt - времени жизни токена
       if (req.headers.cookie) {
         // извлекаем из заголовка куки, ищем в них token=
@@ -952,8 +943,8 @@ class Auth0 {
         if (!tokenCookie) return undefined;
         const token = tokenCookie.split("=")[1]; //new Date().getTime() < expiresAt; -плохое решение по безопасности тк jwt и информация о юзере в открытом доступе. Будем шифровать токен
 
-        const verifyToken = this.verifyToken(token);
-        return verifyToken; // return new Date().getTime() < expiresAt;
+        const verifiedToken = await this.verifyToken(token);
+        return verifiedToken; // return new Date().getTime() < expiresAt;
       }
 
       return undefined;
@@ -1014,8 +1005,47 @@ class Auth0 {
   //   // console.log("isAuthenticated = ()", new Date().getTime() < expiresAt);
   //   return new Date().getTime() < expiresAt;
   // };
-  // c помощью библиотеки jsonwebtoken декодируем токен
+  // 3 вариант работа с сертификатом
 
+
+  async getJWKS() {
+    const res = await axios__WEBPACK_IMPORTED_MODULE_6___default.a.get("https://dev-uejn1xhv.auth0.com/.well-known/jwks.json");
+    const jwks = res.data;
+    return jwks;
+  } // c помощью библиотеки jsonwebtoken декодируем токен
+
+
+  async verifyToken(token) {
+    if (token) {
+      const decodedToken = jsonwebtoken__WEBPACK_IMPORTED_MODULE_5___default.a.decode(token, {
+        complete: true
+      }); // Важная проверка, если изменить jwt сайт падает, поэтому проверяем !decodedToken
+
+      if (!decodedToken) {
+        return undefined;
+      } // 3ий вариант  с сертификатом
+
+
+      const jwks = await this.getJWKS();
+      const jwk = jwks.keys[0]; // BUILD CERTIFICATE
+
+      let cert = jwk.x5c[0];
+      cert = cert.match(/.{1,64}/g).join("\n");
+      cert = `-----BEGIN CERTIFICATE-----\n${cert}\n-----END CERTIFICATE-----\n`;
+
+      if (jwk.kid === decodedToken.header.kid) {
+        try {
+          const verifiedToken = jsonwebtoken__WEBPACK_IMPORTED_MODULE_5___default.a.verify(token, cert);
+          const expiresAt = verifiedToken.exp * 1000;
+          return verifiedToken && new Date().getTime() < expiresAt ? verifiedToken : undefined;
+        } catch (err) {
+          return undefined;
+        }
+      }
+    }
+
+    return undefined;
+  }
 
 }
 
@@ -1055,6 +1085,17 @@ module.exports = __webpack_require__(/*! private-next-pages/_app.js */"./pages/_
 /***/ (function(module, exports) {
 
 module.exports = require("auth0-js");
+
+/***/ }),
+
+/***/ "axios":
+/*!************************!*\
+  !*** external "axios" ***!
+  \************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+module.exports = require("axios");
 
 /***/ }),
 

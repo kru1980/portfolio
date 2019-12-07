@@ -4,13 +4,19 @@ import BasePage from "../components/layouts/BasePage";
 import withAuth from "../components/hoc/withAuth";
 
 const Secret = props => {
-  console.log("secret page props", props);
-
   return (
-    <BaseLayout>
-      <BasePage>secret page</BasePage>
+    <BaseLayout {...props.auth}>
+      <BasePage>
+        secret page
+        <h3>supersecret = {props.supersecret ? props.supersecret : ""}</h3>
+      </BasePage>
     </BaseLayout>
   );
+};
+
+Secret.getInitialProps = () => {
+  const supersecret = "123456";
+  return { supersecret };
 };
 
 export default withAuth(Secret);

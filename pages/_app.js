@@ -24,8 +24,8 @@ class MyApp extends App {
 
     // isAuthenticated проверяет времы выдачи токена, вычитает из текущего времени, и если он не протух, разрешает доступ.
     const user = process.browser
-      ? auth0.clientAuth()
-      : auth0.serverAuth(appContext.ctx.req);
+      ? await auth0.clientAuth()
+      : await auth0.serverAuth(appContext.ctx.req);
 
     // const user = appContext.ctx.req ? appContext.ctx.req.user : undefined;
 
