@@ -45,6 +45,16 @@ app.prepare().then(() => {
     return res.json(secretData);
   });
 
+  //обработчик ошибок Error handling from express-jwt пекета
+  server.use(function(err, req, res, next) {
+    if (err.name === "UnauthorizedError") {
+      res.status(401).send({
+        title: "Вы не авторизованы",
+        detail: "Доступ закрыт"
+      });
+    }
+  });
+
   server.get("*", (req, res) => {
     return handle(req, res);
   });

@@ -4,7 +4,7 @@ import BasePage from "../components/layouts/BasePage";
 import { Button } from "reactstrap";
 
 const About = props => {
-  console.log("props about", props);
+  // console.log("props about", props);
 
   return (
     <BaseLayout title="About as" {...props.auth}>

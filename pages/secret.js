@@ -3,24 +3,26 @@ import BaseLayout from "../components/layouts/BaseLayout";
 import BasePage from "../components/layouts/BasePage";
 
 import withAuth from "../components/hoc/withAuth";
-import axios from "axios";
+import { getSecretData, getSecretDataServer } from "../actions";
 
 // import { getSecretData, getSecretDataServer } from "../actions";
 
 class Secret extends React.Component {
-  // static async getInitialProps({ req }) {
-  //   const anotherSecretData = await getSecretData(req);
+  static async getInitialProps({ req }) {
+    // не получиться получить секретные данные через axios, необходима проверка среды, запрос идет с сервера или клиента (особенность axios - нужно полный путь указывать) Проверку делаем на стр secret
+    // Не разобрался!! зачем componentDidMount и getInitialProps
+    const anotherSecretData = await getSecretData(req)
+    // console.log("anotherSecretData", anotherSecretData);
 
-  //   return { anotherSecretData };
-  // }
+    return { anotherSecretData };
+  }
 
   state = {
     secretData: []
   };
 
   async componentDidMount() {
-    const res = await axios.get("/api/v1/secret");
-    const secretData = res.data;
+    const secretData = await getSecretData();
 
     this.setState({
       secretData

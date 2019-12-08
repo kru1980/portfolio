@@ -1,5 +1,30 @@
 (window["webpackJsonp"] = window["webpackJsonp"] || []).push([["static\\development\\pages\\_app.js"],{
 
+/***/ "./helpers/utils.js":
+/*!**************************!*\
+  !*** ./helpers/utils.js ***!
+  \**************************/
+/*! exports provided: getCookieFromReq */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getCookieFromReq", function() { return getCookieFromReq; });
+var getCookieFromReq = function getCookieFromReq(req, cookieKey) {
+  var cookie = req.headers.cookie.split(";").find(function (c) {
+    return c.trim().startsWith("".concat(cookieKey, "="));
+  });
+
+  if (!cookie) {
+    return undefined;
+  }
+
+  ;
+  return cookie.split("=")[1];
+};
+
+/***/ }),
+
 /***/ "./node_modules/@babel/runtime-corejs2/core-js/array/is-array.js":
 /*!***********************************************************************!*\
   !*** ./node_modules/@babel/runtime-corejs2/core-js/array/is-array.js ***!
@@ -39770,6 +39795,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var jsonwebtoken__WEBPACK_IMPORTED_MODULE_9___default = /*#__PURE__*/__webpack_require__.n(jsonwebtoken__WEBPACK_IMPORTED_MODULE_9__);
 /* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! axios */ "./node_modules/axios/index.js");
 /* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_10___default = /*#__PURE__*/__webpack_require__.n(axios__WEBPACK_IMPORTED_MODULE_10__);
+/* harmony import */ var _helpers_utils__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ../helpers/utils */ "./helpers/utils.js");
+
 
 
 
@@ -39827,42 +39854,29 @@ function () {
       var _ref2 = Object(_babel_runtime_corejs2_helpers_esm_asyncToGenerator__WEBPACK_IMPORTED_MODULE_3__["default"])(
       /*#__PURE__*/
       _babel_runtime_corejs2_regenerator__WEBPACK_IMPORTED_MODULE_2___default.a.mark(function _callee2(req) {
-        var tokenCookie, token, verifiedToken;
+        var token, verifiedToken;
         return _babel_runtime_corejs2_regenerator__WEBPACK_IMPORTED_MODULE_2___default.a.wrap(function _callee2$(_context2) {
           while (1) {
             switch (_context2.prev = _context2.next) {
               case 0:
-                if (!req.headers.cookie) {
-                  _context2.next = 9;
-                  break;
-                }
+                // При перерендере стр, стр формируется на сервере,читать куки клиента не может, однако, если в заголовках объекта req, присутствуют куки, их надо проанализировать на содержание expiresAt - времени жизни токена
+                // if (req.headers.cookie) {
+                //   // извлекаем из заголовка куки, ищем в них token=
+                //   const tokenCookie = req.headers.cookie
+                //     .split(";")
+                //     .find(c => c.trim().startsWith("jwt="));
+                //   if (!tokenCookie) return undefined;
+                //   const token = tokenCookie.split("=")[1];
+                token = Object(_helpers_utils__WEBPACK_IMPORTED_MODULE_11__["getCookieFromReq"])(req, "jwt"); //new Date().getTime() < expiresAt; -плохое решение по безопасности тк jwt и информация о юзере в открытом доступе. Будем шифровать токен
 
-                // извлекаем из заголовка куки, ищем в них token=
-                tokenCookie = req.headers.cookie.split(";").find(function (c) {
-                  return c.trim().startsWith("jwt=");
-                });
-
-                if (tokenCookie) {
-                  _context2.next = 4;
-                  break;
-                }
-
-                return _context2.abrupt("return", undefined);
-
-              case 4:
-                token = tokenCookie.split("=")[1]; //new Date().getTime() < expiresAt; -плохое решение по безопасности тк jwt и информация о юзере в открытом доступе. Будем шифровать токен
-
-                _context2.next = 7;
+                _context2.next = 3;
                 return _this.verifyToken(token);
 
-              case 7:
+              case 3:
                 verifiedToken = _context2.sent;
                 return _context2.abrupt("return", verifiedToken);
 
-              case 9:
-                return _context2.abrupt("return", undefined);
-
-              case 10:
+              case 6:
               case "end":
                 return _context2.stop();
             }
