@@ -41,9 +41,23 @@ app.prepare().then(() => {
   server.use(bodyParser.json());
 
   // хранилище секретных данных
-  server.get("/api/v1/secret", authService.checkJWT, (req, res) => {
-    return res.json(secretData);
-  });
+  server.get(
+    "/api/v1/secret",
+    authService.checkJWT,
+
+    (req, res) => {
+      return res.json(secretData);
+    }
+  );
+  // route отвечающий за страницу onlysiteowner, дополнительно появиться 2я мидлваря, которая проверит роль юзера = хозяин сайта
+  server.get(
+    "/api/v1/onlysiteowner",
+    authService.checkJWT,
+    authService.checkRole("siteOwner"),
+    (req, res) => {
+      return res.json(secretData);
+    }
+  );
 
   //обработчик ошибок Error handling from express-jwt пекета
   server.use(function(err, req, res, next) {

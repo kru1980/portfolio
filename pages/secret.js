@@ -11,7 +11,7 @@ class Secret extends React.Component {
   static async getInitialProps({ req }) {
     // не получиться получить секретные данные через axios, необходима проверка среды, запрос идет с сервера или клиента (особенность axios - нужно полный путь указывать) Проверку делаем на стр secret
     // Не разобрался!! зачем componentDidMount и getInitialProps
-    const anotherSecretData = await getSecretData(req)
+    const anotherSecretData = await getSecretData(req);
     // console.log("anotherSecretData", anotherSecretData);
 
     return { anotherSecretData };
@@ -61,5 +61,5 @@ class Secret extends React.Component {
     );
   }
 }
-
-export default withAuth(Secret);
+// при обновлении компанента withAuth, когда в него передается роль юзера, не забываем withAuth(Secret) заменить на withAuth()(Secret);
+export default withAuth()(Secret);

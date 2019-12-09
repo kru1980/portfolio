@@ -103,6 +103,13 @@ module.exports =
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getCookieFromReq", function() { return getCookieFromReq; });
+// export const  getCookieFromReq =(req, cookieKey) =>{
+//         const cookie = req.headers.cookie
+//           .split(";")
+//           .find(c => c.trim().startsWith(`${cookieKey}=`))
+//         if (!cookie) {return undefined};
+//         return cookie.split("=")[1];
+// }
 const getCookieFromReq = (req, cookieKey) => {
   const cookie = req.headers.cookie.split(";").find(c => c.trim().startsWith(`${cookieKey}=`));
 
@@ -110,7 +117,6 @@ const getCookieFromReq = (req, cookieKey) => {
     return undefined;
   }
 
-  ;
   return cookie.split("=")[1];
 };
 
@@ -962,18 +968,11 @@ class Auth0 {
 
     Object(_babel_runtime_corejs2_helpers_esm_defineProperty__WEBPACK_IMPORTED_MODULE_2__["default"])(this, "serverAuth", async req => {
       // При перерендере стр, стр формируется на сервере,читать куки клиента не может, однако, если в заголовках объекта req, присутствуют куки, их надо проанализировать на содержание expiresAt - времени жизни токена
-      // if (req.headers.cookie) {
-      //   // извлекаем из заголовка куки, ищем в них token=
-      //   const tokenCookie = req.headers.cookie
-      //     .split(";")
-      //     .find(c => c.trim().startsWith("jwt="));
-      //   if (!tokenCookie) return undefined;
-      //   const token = tokenCookie.split("=")[1];
-      const token = Object(_helpers_utils__WEBPACK_IMPORTED_MODULE_7__["getCookieFromReq"])(req, "jwt"); //new Date().getTime() < expiresAt; -плохое решение по безопасности тк jwt и информация о юзере в открытом доступе. Будем шифровать токен
-
-      const verifiedToken = await this.verifyToken(token);
-      return verifiedToken; // return new Date().getTime() < expiresAt;
-      // }
+      if (req.headers.cookie) {
+        const token = Object(_helpers_utils__WEBPACK_IMPORTED_MODULE_7__["getCookieFromReq"])(req, "jwt");
+        const verifiedToken = await this.verifyToken(token);
+        return verifiedToken;
+      }
 
       return undefined;
     });
