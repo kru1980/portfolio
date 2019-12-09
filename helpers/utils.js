@@ -1,13 +1,22 @@
+// export const  getCookieFromReq =(req, cookieKey) =>{
 
+//         const cookie = req.headers.cookie
+//           .split(";")
+//           .find(c => c.trim().startsWith(`${cookieKey}=`))
 
+//         if (!cookie) {return undefined};
 
-export const  getCookieFromReq =(req, cookieKey) =>{
+//         return cookie.split("=")[1];
+// }
 
-        const cookie = req.headers.cookie
-          .split(";")
-          .find(c => c.trim().startsWith(`${cookieKey}=`))
+export const getCookieFromReq = (req, cookieKey) => {
+  const cookie = req.headers.cookie
+    .split(";")
+    .find(c => c.trim().startsWith(`${cookieKey}=`));
 
-        if (!cookie) {return undefined};
+  if (!cookie) {
+    return undefined;
+  }
 
-        return cookie.split("=")[1];
-}
+  return cookie.split("=")[1];
+};

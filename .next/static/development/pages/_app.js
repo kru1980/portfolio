@@ -10,6 +10,13 @@
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getCookieFromReq", function() { return getCookieFromReq; });
+// export const  getCookieFromReq =(req, cookieKey) =>{
+//         const cookie = req.headers.cookie
+//           .split(";")
+//           .find(c => c.trim().startsWith(`${cookieKey}=`))
+//         if (!cookie) {return undefined};
+//         return cookie.split("=")[1];
+// }
 var getCookieFromReq = function getCookieFromReq(req, cookieKey) {
   var cookie = req.headers.cookie.split(";").find(function (c) {
     return c.trim().startsWith("".concat(cookieKey, "="));
@@ -19,7 +26,6 @@ var getCookieFromReq = function getCookieFromReq(req, cookieKey) {
     return undefined;
   }
 
-  ;
   return cookie.split("=")[1];
 };
 
@@ -39859,24 +39865,23 @@ function () {
           while (1) {
             switch (_context2.prev = _context2.next) {
               case 0:
-                // При перерендере стр, стр формируется на сервере,читать куки клиента не может, однако, если в заголовках объекта req, присутствуют куки, их надо проанализировать на содержание expiresAt - времени жизни токена
-                // if (req.headers.cookie) {
-                //   // извлекаем из заголовка куки, ищем в них token=
-                //   const tokenCookie = req.headers.cookie
-                //     .split(";")
-                //     .find(c => c.trim().startsWith("jwt="));
-                //   if (!tokenCookie) return undefined;
-                //   const token = tokenCookie.split("=")[1];
-                token = Object(_helpers_utils__WEBPACK_IMPORTED_MODULE_11__["getCookieFromReq"])(req, "jwt"); //new Date().getTime() < expiresAt; -плохое решение по безопасности тк jwt и информация о юзере в открытом доступе. Будем шифровать токен
+                if (!req.headers.cookie) {
+                  _context2.next = 6;
+                  break;
+                }
 
-                _context2.next = 3;
+                token = Object(_helpers_utils__WEBPACK_IMPORTED_MODULE_11__["getCookieFromReq"])(req, "jwt");
+                _context2.next = 4;
                 return _this.verifyToken(token);
 
-              case 3:
+              case 4:
                 verifiedToken = _context2.sent;
                 return _context2.abrupt("return", verifiedToken);
 
               case 6:
+                return _context2.abrupt("return", undefined);
+
+              case 7:
               case "end":
                 return _context2.stop();
             }
